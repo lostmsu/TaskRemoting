@@ -18,7 +18,7 @@
             this.arguments = arguments;
         }
 
-        internal void Invoke<T>(RemoteTaskCompletionSource<T> taskCompletionSource)
+        internal void Invoke<T>([NotNull] RemoteTaskCompletionSource<T> taskCompletionSource)
         {
             var task = (Task<T>)method.Invoke(target, arguments);
             if (task == null) {
@@ -36,6 +36,28 @@
                     taskCompletionSource.TrySetCancelled();
                 else
                     taskCompletionSource.TrySetResult(t.Result);
+            }, TaskContinuationOptions.ExecuteSynchronously);
+        }
+
+        internal void InvokeNoResult([NotNull] RemoteTaskCompletionSource<bool> taskCompletionSource)
+        {
+            var task = (Task)method.Invoke(target, arguments);
+            if (task == null)
+            {
+                var nullResultException = new InvalidOperationException(
+                    nameof(RemoteInvoker) + " invoked " + method.Name + ", but resulting task was null");
+                taskCompletionSource.TrySetException(nullResultException);
+                return;
+            }
+
+            task.ContinueWith(t =>
+            {
+                if (t.IsFaulted)
+                    taskCompletionSource.TrySetException(t.Exception);
+                else if (t.IsCanceled)
+                    taskCompletionSource.TrySetCancelled();
+                else
+                    taskCompletionSource.TrySetResult(true);
             }, TaskContinuationOptions.ExecuteSynchronously);
         }
     }

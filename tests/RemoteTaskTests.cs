@@ -22,7 +22,7 @@
                 assemblyName: testAssembly.FullName,
                 typeName: typeof(SampleRemoteClass).FullName);
 
-            int result = await RemoteTask.Invoke(remoteDomain, sampleRemote.Add, 1, 2);
+            int result = await remoteDomain.Invoke(sampleRemote.Add, 1, 2);
             Assert.AreEqual(3, result);
         }
     }
