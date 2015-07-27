@@ -3,7 +3,7 @@
     using System;
     using System.Threading.Tasks;
 
-    public class RemoteTaskCompletionSource<T> : MarshalByRefObject, ITaskCompletionSource<T>
+    sealed class RemoteTaskCompletionSource<T> : MarshalByRefObject
     {
         readonly TaskCompletionSource<T> localCompletionSource = new TaskCompletionSource<T>();
 

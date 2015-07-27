@@ -7,7 +7,7 @@
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
-    public class RemoveInvokerTests
+    public class RemoteTaskTests
     {
         [TestMethod]
         public async Task Sample()
@@ -22,12 +22,7 @@
                 assemblyName: testAssembly.FullName,
                 typeName: typeof(SampleRemoteClass).FullName);
 
-            var invokerAssembly = typeof(RemoteInvoker).Assembly;
-            var remoteInvoker = RemoteInvoker.Invoke(remoteDomain, sampleRemote.Add, 1, 2);
-
-            var completionSource = new RemoteTaskCompletionSource<int>();
-            remoteInvoker.Invoke(completionSource);
-            int result = await completionSource.Task;
+            int result = await RemoteTask.Invoke(remoteDomain, sampleRemote.Add, 1, 2);
             Assert.AreEqual(3, result);
         }
     }

@@ -5,25 +5,25 @@
     using System.Threading.Tasks;
     using JetBrains.Annotations;
 
-    public class RemoteInvoker: MarshalByRefObject
+    sealed class RemoteInvoker: MarshalByRefObject
     {
-        object Target { get; set; }
-        MethodInfo Method { get; set; }
-        object[] Arguments { get; set; }
+        object target;
+        MethodInfo method;
+        object[] arguments;
 
-        void Initialize(object target, MethodInfo method, object[] arguments)
+        internal void Initialize(object target, MethodInfo method, object[] arguments)
         {
-            this.Target = target;
-            this.Method = method;
-            this.Arguments = arguments;
+            this.target = target;
+            this.method = method;
+            this.arguments = arguments;
         }
 
-        public void Invoke<T>(ITaskCompletionSource<T> taskCompletionSource)
+        internal void Invoke<T>(RemoteTaskCompletionSource<T> taskCompletionSource)
         {
-            var task = (Task<T>)Method.Invoke(Target, Arguments);
+            var task = (Task<T>)method.Invoke(target, arguments);
             if (task == null) {
                 var nullResultException = new InvalidOperationException(
-                    nameof(RemoteInvoker) + " invoked " + Method.Name + ", but resulting task was null");
+                    nameof(RemoteInvoker) + " invoked " + method.Name + ", but resulting task was null");
                 taskCompletionSource.TrySetException(nullResultException);
                 return;
             }
@@ -37,21 +37,6 @@
                 else
                     taskCompletionSource.TrySetResult(t.Result);
             }, TaskContinuationOptions.ExecuteSynchronously);
-        }
-
-        public static RemoteInvoker Invoke<TArg1, TArg2, TResult>(
-            [NotNull] AppDomain targetDomain,
-            [NotNull] Func<TArg1, TArg2, Task<TResult>> methodCall,
-            TArg1 arg1, TArg2 arg2)
-        {
-            if (methodCall == null)
-                throw new ArgumentNullException(nameof(methodCall));
-            if (targetDomain == null)
-                throw new ArgumentNullException(nameof(targetDomain));
-
-            var invoker = targetDomain.CreateInstanceAndUnwrap<RemoteInvoker>();
-            invoker.Initialize(methodCall.Target, methodCall.Method, new object[] { arg1, arg2 });
-            return invoker;
         }
     }
 }

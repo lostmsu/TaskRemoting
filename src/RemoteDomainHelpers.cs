@@ -1,7 +1,7 @@
 ﻿namespace TaskRemoting
 {
     using System;
-    public static class RemoteDomainHelpers
+    static class RemoteDomainHelpers
     {
         public static T CreateInstanceAndUnwrap<T>(this AppDomain appDomain) where T : MarshalByRefObject
         {

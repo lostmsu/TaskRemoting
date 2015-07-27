@@ -46,7 +46,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ITaskCompletionSource.cs" />
     <Compile Include="RemoteDomainHelpers.cs" />
     <Compile Include="RemoteInvoker.cs" />
     <Compile Include="RemoteTask.cs" />
