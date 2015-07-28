@@ -3,7 +3,7 @@
     using System;
     using System.Threading.Tasks;
 
-    class SampleRemoteClass: MarshalByRefObject
+    public class SampleRemoteClass: MarshalByRefObject
     {
         public Task<int> Add(int a, int b)
         {
