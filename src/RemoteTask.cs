@@ -37,7 +37,6 @@
         /// <summary>
         /// Performs specified invocation in target domain
         /// </summary>
-        /// <typeparam name="TResult">Type of the resulting value</typeparam>
         /// <param name="targetDomain">Domain, to invoke in</param>
         /// <param name="method">Method to call</param>
         /// <param name="arguments">Arguments to pass to the method</param>
@@ -66,29 +65,32 @@
         /// <param name="method">Method to call</param>
         public static Task<TResult> Invoke<TResult>(
             [NotNull] this AppDomain targetDomain,
-            [NotNull] Func<Task<TResult>> methodCall)
+            [NotNull] Func<Task<TResult>> method)
         {
-            return targetDomain.Invoke<TResult>((Delegate)methodCall);
+            return targetDomain.Invoke<TResult>((Delegate)method);
         }
 
         /// <summary>
         /// Performs specified invocation in target domain
         /// </summary>
+        /// <typeparam name="TArg">Type of the method parameter</typeparam>
         /// <typeparam name="TResult">Type of the resulting value</typeparam>
         /// <param name="targetDomain">Domain, to invoke in</param>
         /// <param name="method">Method to call</param>
         /// <param name="arg">Value of the parameter to pass</param>
         public static Task<TResult> Invoke<TArg, TResult>(
             [NotNull] this AppDomain targetDomain,
-            [NotNull] Func<TArg, Task<TResult>> methodCall,
+            [NotNull] Func<TArg, Task<TResult>> method,
             TArg arg)
         {
-            return targetDomain.Invoke<TResult>(methodCall, arg);
+            return targetDomain.Invoke<TResult>(method, arg);
         }
 
         /// <summary>
         /// Performs specified invocation in target domain
         /// </summary>
+        /// <typeparam name="TArg1">Type of the first parameter to the method</typeparam>
+        /// <typeparam name="TArg2">Type of the second paramter to the method</typeparam>
         /// <typeparam name="TResult">Type of the resulting value</typeparam>
         /// <param name="targetDomain">Domain, to invoke in</param>
         /// <param name="method">Method to call</param>
@@ -96,10 +98,10 @@
         /// <param name="arg2">Value of the second parameter to pass</param>
         public static Task<TResult> Invoke<TArg1, TArg2, TResult>(
             [NotNull] this AppDomain targetDomain,
-            [NotNull] Func<TArg1, TArg2, Task<TResult>> methodCall,
+            [NotNull] Func<TArg1, TArg2, Task<TResult>> method,
             TArg1 arg1, TArg2 arg2)
         {
-            return targetDomain.Invoke<TResult>(methodCall, arg1, arg2);
+            return targetDomain.Invoke<TResult>(method, arg1, arg2);
         }
         #endregion
 
@@ -107,43 +109,43 @@
         /// <summary>
         /// Performs specified invocation in target domain
         /// </summary>
-        /// <typeparam name="TResult">Type of the resulting value</typeparam>
         /// <param name="targetDomain">Domain, to invoke in</param>
         /// <param name="method">Method to call</param>
-        public static Task Invoke([NotNull] this AppDomain targetDomain, [NotNull] Func<Task> methodCall)
+        public static Task Invoke([NotNull] this AppDomain targetDomain, [NotNull] Func<Task> method)
         {
-            return targetDomain.Invoke((Delegate)methodCall);
+            return targetDomain.Invoke((Delegate)method);
         }
 
         /// <summary>
         /// Performs specified invocation in target domain
         /// </summary>
-        /// <typeparam name="TResult">Type of the resulting value</typeparam>
+        /// <typeparam name="TArg">Type of the method parameter</typeparam>
         /// <param name="targetDomain">Domain, to invoke in</param>
         /// <param name="method">Method to call</param>
         /// <param name="arg">Value of the parameter to pass</param>
         public static Task Invoke<TArg>(
             [NotNull] this AppDomain targetDomain,
-            [NotNull] Func<TArg, Task> methodCall,
+            [NotNull] Func<TArg, Task> method,
             TArg arg)
         {
-            return targetDomain.Invoke(methodCall, arg);
+            return targetDomain.Invoke(method, arg);
         }
 
         /// <summary>
         /// Performs specified invocation in target domain
         /// </summary>
-        /// <typeparam name="TResult">Type of the resulting value</typeparam>
+        /// <typeparam name="TArg1">Type of the first parameter to the method</typeparam>
+        /// <typeparam name="TArg2">Type of the second paramter to the method</typeparam>
         /// <param name="targetDomain">Domain, to invoke in</param>
         /// <param name="method">Method to call</param>
         /// <param name="arg1">Value of the first parameter to pass</param>
         /// <param name="arg2">Value of the second parameter to pass</param>
         public static Task Invoke<TArg1, TArg2>(
             [NotNull] this AppDomain targetDomain,
-            [NotNull] Func<TArg1, TArg2, Task> methodCall,
+            [NotNull] Func<TArg1, TArg2, Task> method,
             TArg1 arg1, TArg2 arg2)
         {
-            return targetDomain.Invoke(methodCall, arg1, arg2);
+            return targetDomain.Invoke(method, arg1, arg2);
         }
         #endregion
     }
