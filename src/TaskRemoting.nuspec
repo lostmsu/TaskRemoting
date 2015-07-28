@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>TaskRemoting</id>
+        <version>0.0.1</version>
+        <authors>lost</authors>
+        <owners>lost</owners>
+        <licenseUrl>https://raw.githubusercontent.com/lostmsu/TaskRemoting/master/LICENSE</licenseUrl>
+        <projectUrl>https://github.com/lostmsu/TaskRemoting</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Wraps cross-domain asynchronous method calls, returing System.Threading.Tasks.Task.
+
+Sample usage:
+using TaskRemoting;
+remoteDomain.Invoke(myObj.MyMethod, myArg);</description>
+        <summary>Wraps cross-domain asynchronous method calls, returing System.Threading.Tasks.Task.</summary>
+        <copyright />
+        <tags>Task; await; remoting; AppDomain</tags>
+    </metadata>
+    <files>
+        <file src="..\bin\Release\TaskRemoting.xml" target="content\TaskRemoting.xml" />
+        <file src="..\bin\Release\TaskRemoting.dll" target="lib\TaskRemoting.dll" />
+    </files>
+</package>
