@@ -2,6 +2,7 @@
 {
     using System;
     using System.Reflection;
+    using System.Security;
     using System.Threading.Tasks;
     using JetBrains.Annotations;
 
@@ -18,6 +19,7 @@
             this.arguments = arguments;
         }
 
+        [SecurityCritical]
         internal void Invoke<T>([NotNull] RemoteTaskCompletionSource<T> taskCompletionSource)
         {
             var task = (Task<T>)method.Invoke(target, arguments);
@@ -39,6 +41,7 @@
             }, TaskContinuationOptions.ExecuteSynchronously);
         }
 
+        [SecurityCritical]
         internal void InvokeNoResult([NotNull] RemoteTaskCompletionSource<bool> taskCompletionSource)
         {
             var task = (Task)method.Invoke(target, arguments);
