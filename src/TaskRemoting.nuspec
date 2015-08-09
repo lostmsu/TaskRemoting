@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>TaskRemoting</id>
-        <version>0.0.1</version>
+        <version>0.1.0</version>
         <authors>lost</authors>
         <owners>lost</owners>
         <licenseUrl>https://raw.githubusercontent.com/lostmsu/TaskRemoting/master/LICENSE</licenseUrl>
@@ -14,6 +14,7 @@ Sample usage:
 using TaskRemoting;
 remoteDomain.Invoke(myObj.MyMethod, myArg);</description>
         <summary>Wraps cross-domain asynchronous method calls, returing System.Threading.Tasks.Task.</summary>
+        <releaseNotes>You can now call private methods in partial trust domains as long. But TaskRemoting assembly must be loaded with full trust, and caller must have unrestricted ReflectionPermission</releaseNotes>
         <copyright />
         <tags>Task; await; remoting; AppDomain</tags>
     </metadata>
