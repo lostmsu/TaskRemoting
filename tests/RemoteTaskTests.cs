@@ -18,36 +18,38 @@
         {
             var domainSetup = new AppDomainSetup
             {
-                ApplicationBase = Path.GetDirectoryName(testAssembly.Location),
+                ApplicationBase = Environment.CurrentDirectory,
             };
             var remoteDomain = AppDomain.CreateDomain("TestRemoteDomain", null, domainSetup);
-            await RunSample(remoteDomain);
-            AppDomain.Unload(remoteDomain);
+            await TestRemoteExecution(remoteDomain);
         }
 
         [TestMethod]
-        public async Task SandboxedSample()
+        public async Task PartialTrustSample()
         {
+            var permissions = this.GetPartialTrustPermissions();
             var domainSetup = new AppDomainSetup
             {
-                ApplicationBase = Path.GetDirectoryName(testAssembly.Location),
+                // TODO: SECURITY: must be provided from outside
+                ApplicationBase = Environment.CurrentDirectory,
             };
-            PermissionSet permissions = GetPermissions(SecurityZone.Internet);
-            var remoteDomain = AppDomain.CreateDomain("TestSandboxDomain", null, domainSetup, permissions);
-            await RunSample(remoteDomain);
-            AppDomain.Unload(remoteDomain);
+
+            var remoteDomain = AppDomain.CreateDomain("PartialTrust", null, domainSetup, permissions
+                    , typeof(RemoteTask).Assembly.GetStrongName()
+                );
+            await TestRemoteExecution(remoteDomain);
         }
 
-        static PermissionSet GetPermissions(SecurityZone securityZone)
+        PermissionSet GetPartialTrustPermissions()
         {
             var evidence = new Evidence();
-            evidence.AddHostEvidence(new Zone(securityZone));
-            var permissions = SecurityManager.GetStandardSandbox(evidence);
-            return permissions;
+            evidence.AddHostEvidence(new Zone(SecurityZone.Internet));
+            return SecurityManager.GetStandardSandbox(evidence);
         }
 
-        static async Task RunSample(AppDomain remoteDomain)
+        static async Task TestRemoteExecution(AppDomain remoteDomain)
         {
+            var testAssembly = Assembly.GetExecutingAssembly();
             var sampleRemote = (SampleRemoteClass)remoteDomain.CreateInstanceAndUnwrap(
                 assemblyName: testAssembly.FullName,
                 typeName: typeof(SampleRemoteClass).FullName);

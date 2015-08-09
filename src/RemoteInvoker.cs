@@ -41,6 +41,7 @@
             return System.Linq.Expressions.Expression.GetDelegateType(signatureTypes.ToArray());
         }
 
+        [SecurityCritical]
         internal void Invoke<T>([NotNull] RemoteTaskCompletionSource<T> taskCompletionSource)
         {
             var task = (Task<T>)method.DynamicInvoke(arguments);
@@ -62,6 +63,7 @@
             }, TaskContinuationOptions.ExecuteSynchronously);
         }
 
+        [SecurityCritical]
         internal void InvokeNoResult([NotNull] RemoteTaskCompletionSource<bool> taskCompletionSource)
         {
             var task = (Task)method.DynamicInvoke(arguments);
