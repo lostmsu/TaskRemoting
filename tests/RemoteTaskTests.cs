@@ -35,7 +35,7 @@
             };
 
             var remoteDomain = AppDomain.CreateDomain("PartialTrust", null, domainSetup, permissions
-                    , typeof(RemoteTask).Assembly.GetStrongName()
+                    , fullTrustAssemblies: typeof(RemoteTask).Assembly.GetStrongName()
                 );
             await TestRemoteExecution(remoteDomain);
         }
