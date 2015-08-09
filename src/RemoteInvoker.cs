@@ -1,29 +1,52 @@
 ﻿namespace TaskRemoting
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Reflection;
+    using System.Security;
+    using System.Security.Permissions;
     using System.Threading.Tasks;
     using JetBrains.Annotations;
 
     sealed class RemoteInvoker: MarshalByRefObject
     {
-        object target;
-        MethodInfo method;
+        Delegate method;
         object[] arguments;
 
+        [SecurityCritical]
         internal void Initialize(object target, MethodInfo method, object[] arguments)
         {
-            this.target = target;
-            this.method = method;
             this.arguments = arguments;
+
+            var delegateType = GetDelegateType(method);
+            var myPermissionSet = new PermissionSet(PermissionState.None);
+            myPermissionSet.AddPermission(new ReflectionPermission(ReflectionPermissionFlag.MemberAccess));
+            myPermissionSet.Assert();
+            try
+            {
+                this.method = method.CreateDelegate(delegateType, target);
+            }
+            finally
+            {
+                CodeAccessPermission.RevertAssert();
+            }
+        }
+
+        static Type GetDelegateType(MethodInfo method)
+        {
+            var signatureTypes = method.GetParameters().Select(param => param.ParameterType).ToList();
+            signatureTypes.Add(method.ReturnType);
+
+            return System.Linq.Expressions.Expression.GetDelegateType(signatureTypes.ToArray());
         }
 
         internal void Invoke<T>([NotNull] RemoteTaskCompletionSource<T> taskCompletionSource)
         {
-            var task = (Task<T>)method.Invoke(target, arguments);
+            var task = (Task<T>)method.DynamicInvoke(arguments);
             if (task == null) {
                 var nullResultException = new InvalidOperationException(
-                    nameof(RemoteInvoker) + " invoked " + method.Name + ", but resulting task was null");
+                    nameof(RemoteInvoker) + " invoked , but resulting task was null");
                 taskCompletionSource.TrySetException(nullResultException);
                 return;
             }
@@ -41,11 +64,11 @@
 
         internal void InvokeNoResult([NotNull] RemoteTaskCompletionSource<bool> taskCompletionSource)
         {
-            var task = (Task)method.Invoke(target, arguments);
+            var task = (Task)method.DynamicInvoke(arguments);
             if (task == null)
             {
                 var nullResultException = new InvalidOperationException(
-                    nameof(RemoteInvoker) + " invoked " + method.Name + ", but resulting task was null");
+                    nameof(RemoteInvoker) + " invoked , but resulting task was null");
                 taskCompletionSource.TrySetException(nullResultException);
                 return;
             }

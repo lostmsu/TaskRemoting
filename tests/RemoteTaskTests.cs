@@ -32,15 +32,21 @@
             {
                 ApplicationBase = Path.GetDirectoryName(testAssembly.Location),
             };
-            var evidence = new Evidence();
-            evidence.AddHostEvidence(new Zone(SecurityZone.Internet));
-            var permissions = SecurityManager.GetStandardSandbox(evidence);
+            PermissionSet permissions = GetPermissions(SecurityZone.Internet);
             var remoteDomain = AppDomain.CreateDomain("TestSandboxDomain", null, domainSetup, permissions);
             await RunSample(remoteDomain);
             AppDomain.Unload(remoteDomain);
         }
 
-        private static async Task RunSample(AppDomain remoteDomain)
+        static PermissionSet GetPermissions(SecurityZone securityZone)
+        {
+            var evidence = new Evidence();
+            evidence.AddHostEvidence(new Zone(securityZone));
+            var permissions = SecurityManager.GetStandardSandbox(evidence);
+            return permissions;
+        }
+
+        static async Task RunSample(AppDomain remoteDomain)
         {
             var sampleRemote = (SampleRemoteClass)remoteDomain.CreateInstanceAndUnwrap(
                 assemblyName: testAssembly.FullName,

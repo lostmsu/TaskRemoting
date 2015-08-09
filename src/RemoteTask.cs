@@ -1,6 +1,8 @@
 ﻿namespace TaskRemoting
 {
     using System;
+    using System.Security;
+    using System.Security.Permissions;
     using System.Threading.Tasks;
     using JetBrains.Annotations;
 
@@ -16,6 +18,7 @@
         /// <param name="targetDomain">Domain, to invoke in</param>
         /// <param name="method">Method to call</param>
         /// <param name="arguments">Arguments to pass to the method</param>
+        [SecuritySafeCritical]
         public static Task<TResult> Invoke<TResult>(
             [NotNull] this AppDomain targetDomain,
             [NotNull] Delegate method,
@@ -25,6 +28,8 @@
                 throw new ArgumentNullException(nameof(method));
             if (targetDomain == null)
                 throw new ArgumentNullException(nameof(targetDomain));
+
+            CheckReflectionPermission();
 
             var invoker = targetDomain.CreateInstanceAndUnwrap<RemoteInvoker>();
             invoker.Initialize(method.Target, method.Method, arguments);
@@ -40,6 +45,7 @@
         /// <param name="targetDomain">Domain, to invoke in</param>
         /// <param name="method">Method to call</param>
         /// <param name="arguments">Arguments to pass to the method</param>
+        [SecuritySafeCritical]
         public static Task Invoke([NotNull] this AppDomain targetDomain,
             [NotNull] Delegate method, params object[] arguments)
         {
@@ -47,6 +53,8 @@
                 throw new ArgumentNullException(nameof(method));
             if (targetDomain == null)
                 throw new ArgumentNullException(nameof(targetDomain));
+
+            CheckReflectionPermission();
 
             var invoker = targetDomain.CreateInstanceAndUnwrap<RemoteInvoker>();
             invoker.Initialize(method.Target, method.Method, arguments);
@@ -148,5 +156,10 @@
             return targetDomain.Invoke(method, arg1, arg2);
         }
         #endregion
+
+        static void CheckReflectionPermission()
+        {
+            new ReflectionPermission(PermissionState.Unrestricted).Demand();
+        }
     }
 }
