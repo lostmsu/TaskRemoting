@@ -19,7 +19,7 @@ remoteDomain.Invoke(myObj.MyMethod, myArg);</description>
         <tags>Task; await; remoting; AppDomain</tags>
     </metadata>
     <files>
-        <file src="..\bin\Release\TaskRemoting.xml" target="content\TaskRemoting.xml" />
+        <file src="..\bin\Release\TaskRemoting.xml" target="lib\TaskRemoting.xml" />
         <file src="..\bin\Release\TaskRemoting.dll" target="lib\TaskRemoting.dll" />
     </files>
 </package>
